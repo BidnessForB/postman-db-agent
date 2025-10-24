@@ -6,6 +6,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,16 +23,22 @@ let dbPool;
  */
 async function initDatabase() {
   try {
-    dbPool = mysql.createPool({
-      host: 'localhost',
-      user: 'root',
-      database: 'users',
+    // Get database configuration from environment variables
+    const dbConfig = {
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'users',
+      port: process.env.DB_PORT || 3306,
       waitForConnections: true,
-      connectionLimit: 10,
+      connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT) || 10,
       queueLimit: 0
-    });
+    };
+    
+    dbPool = mysql.createPool(dbConfig);
     
     console.log('Database connection pool created');
+    console.log(`Connected to: ${dbConfig.host}:${dbConfig.port}/${dbConfig.database} as ${dbConfig.user}`);
   } catch (error) {
     console.log('Database connection error:', error.message);
     process.exit(1);

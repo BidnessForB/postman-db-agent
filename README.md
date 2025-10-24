@@ -17,7 +17,20 @@ This project provides a REST API that acts as a database agent, allowing you to:
 npm install
 ```
 
-### 2. Setup Database (Choose one option)
+### 2. Configure Environment Variables
+```bash
+# Copy the example configuration file
+cp .env.example .env
+
+# Edit .env with your database settings
+# DB_HOST=localhost
+# DB_USER=root
+# DB_PASSWORD=your_password
+# DB_NAME=users
+# DB_PORT=3306
+```
+
+### 3. Setup Database (Choose one option)
 
 #### Option A: Complete setup from scratch (Recommended)
 ```bash
@@ -43,12 +56,12 @@ chmod +x db/procedures/install_procedures.sh
 ./db/procedures/install_procedures.sh myuser mypassword
 ```
 
-### 3. Start the Database Agent
+### 4. Start the Database Agent
 ```bash
 node dbAgent.js
 ```
 
-### 4. Test the API
+### 5. Test the API
 
 #### Postman Collection
 1. Import `Postman_Database_Agent_Collection.json` into Postman
@@ -89,6 +102,8 @@ node-data/
 ├── dbAgent.js              # Main database agent server
 ├── package.json            # Dependencies
 ├── Postman_Database_Agent_Collection.json # Postman collection
+├── .vscode/
+│   └── dbAgent-postman-package.js # Postman package module
 ├── db/                     # Database files
 │   ├── database_schema.sql # Complete database schema
 │   ├── setup_database.sh   # Complete setup script
@@ -122,13 +137,25 @@ The following stored procedures are available:
 
 ## Configuration
 
-The database agent connects to:
-- **Host**: localhost
-- **User**: root
-- **Database**: users
-- **Port**: 3000 (API server)
+The database agent uses environment variables for configuration. Create a `.env` file from the example:
 
-To modify these settings, edit the connection configuration in `dbAgent.js`.
+```bash
+cp env.example .env
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DB_HOST` | localhost | Database host |
+| `DB_USER` | root | Database username |
+| `DB_PASSWORD` | (empty) | Database password |
+| `DB_NAME` | users | Database name |
+| `DB_PORT` | 3306 | Database port |
+| `DB_CONNECTION_LIMIT` | 10 | Connection pool limit |
+| `PORT` | 3000 | API server port |
+
+To modify these settings, edit your `.env` file.
 
 ## Postman Integration
 
@@ -137,6 +164,15 @@ This agent is designed to work seamlessly with Postman. You can:
 2. Use the stored procedures for database operations
 3. Test your database operations without direct MySQL access
 4. Build automated tests for your database functionality
+
+### Postman Package Module
+
+The project includes `dbAgent-postman-package.js` - a set of utility functions that wrap the database agent API, making it easy to use in Postman scripts:
+
+- **`sendSQL(querySql)`** - Execute custom SQL queries
+- **`execProcedure(procName, params)`** - Execute stored procedures
+
+These functions handle HTTP requests to the database agent endpoints and provide a clean interface for database operations within Postman scripts. The package is ready to be imported into the Postman package manager for easy reuse across collections.
 
 ## Benefits
 
