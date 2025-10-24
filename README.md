@@ -7,7 +7,7 @@ A lightweight REST API for MySQL database access with stored procedure support.
 NOTE: Currently only works for mySQL databases via the [mysql2 driver package](https://www.npmjs.com/package/mysql2).  If useful this could be expanded to use any sql driver.  
 
 This project provides a REST API that acts as a database agent, allowing you to:
-- Execute SQL queries via HTTP endpoints
+- Execute SQL queries via HTTP endpoints 
 - Call MySQL stored procedures
 - Access your database from Postman or any HTTP client
 - Use your own database or the included sample database
