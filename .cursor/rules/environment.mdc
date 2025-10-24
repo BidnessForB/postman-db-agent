@@ -1,0 +1,36 @@
+---
+alwaysApply: true
+---
+
+# Environment Rules
+
+## Security Requirements
+- Store ALL sensitive data in .env file
+- NEVER commit .env file to version control
+- Create .env.example with placeholder values
+- Validate environment variables at startup
+- Use process.env for accessing variables
+
+## Required Variables
+- `OPENAI_API_KEY` - OpenAI API key (required)
+- `SPOTIFY_CLIENT_ID` - Spotify client ID (optional)
+- `SPOTIFY_CLIENT_SECRET` - Spotify client secret (optional)
+- `NODE_ENV` - Environment (development/production)
+- `PORT` - Server port (default: 3001)
+
+## Configuration
+- Centralize in `app/config/` directory
+- Use environment variables for external services
+- Implement validation on startup
+- Provide clear error messages for missing config
+
+```javascript
+// Good: Environment validation
+const openAIAPIKey = process.env.OPENAI_API_KEY;
+if (!openAIAPIKey) {
+  logWarn('OpenAI API key not set - AI features disabled');
+}
+
+// Bad: Hardcoded values
+const apiKey = 'sk-1234567890abcdef';
+```

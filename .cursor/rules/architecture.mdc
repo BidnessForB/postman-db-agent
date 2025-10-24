@@ -1,0 +1,30 @@
+---
+alwaysApply: true
+---
+
+# Architecture Rules
+
+## Core Structure
+- **Entry Point**: `app/server.js` - Express server
+- **Config**: `app/config/` - Centralized configuration
+- **Utils**: `app/utils/` - Utility functions
+- **Templates**: `app/templates/` - Handlebars templates
+- **Public**: `app/public/` - CSS, JS, images
+- **Uploads**: `app/uploads/` - Temporary file storage
+
+## Key Principles
+- Separate utility files by functionality (imageUtils.js, tagParser.js, etc.)
+- Use descriptive filenames indicating functionality
+- Keep utilities focused on single responsibilities
+- Avoid client-side JavaScript - prefer server-side rendering
+- UUID-based directory structure for uploaded images
+
+## Directory Structure
+```
+app/
+├── config/          # Configuration management
+├── public/styles/   # CSS files by component
+├── templates/       # Handlebars templates
+├── uploads/{id}/    # Per-image directories
+└── utils/           # Utility functions
+```

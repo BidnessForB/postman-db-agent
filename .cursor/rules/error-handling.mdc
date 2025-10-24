@@ -1,0 +1,35 @@
+---
+alwaysApply: true
+---
+
+# Error Handling Rules
+
+## Core Requirements
+- Always wrap API calls in try-catch blocks
+- Use `logError()` for error logging with structured metadata
+- Include fallback behavior where appropriate
+- Handle network timeouts and connection issues
+- Default to single lines for info/warn logging
+
+## Error Patterns
+- Graceful degradation for non-critical failures
+- Meaningful user-facing error messages
+- Retry logic for transient failures
+- Proper cleanup in finally blocks
+- Include request context (imageId, etc.)
+
+```javascript
+// Good: Comprehensive error handling
+const handleFileUpload = (req, res, next) => {
+  try {
+    if (!req.file) throw new Error('No file uploaded');
+    const buffer = fs.readFileSync(req.file.path);
+    if (!validateImage(buffer)) throw new Error(`Invalid image: ${req.file.originalname}`);
+    next();
+  } catch (error) {
+    cleanImageDir(req.imageId);
+    logError('Upload failed: ' + error.message, error);
+    return res.status(400).json({ status: 'error', message: error.message });
+  }
+};
+```

@@ -1,0 +1,37 @@
+---
+alwaysApply: true
+---
+
+# Code Style Rules
+
+## Language & Formatting
+- Node.js with CommonJS (require/module.exports) - NO TypeScript
+- Use ES6+ features (const, let, arrow functions, async/await)
+- 2 spaces indentation
+- Meaningful variable and function names
+- JSDoc comments for functions and complex logic
+
+## File Naming
+- JavaScript: camelCase (imageUtils.js)
+- Templates: kebab-case (data-tree.hbs)
+- Descriptive names indicating functionality
+
+## Code Quality
+- Small, focused functions with single responsibilities
+- Comprehensive error handling with try-catch
+- Modular, reusable utility functions
+- Comments for complex image processing logic
+
+```javascript
+// Good
+const processImageUpload = async (imageId) => {
+  try {
+    const exifData = await extractExifData(imageId);
+    logInfo('Image processed', imageId);
+    return exifData;
+  } catch (error) {
+    logError('Failed to process image', error);
+    return null;
+  }
+};
+```

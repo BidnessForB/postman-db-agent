@@ -1,0 +1,52 @@
+---
+scope: global
+priority: critical
+categories: [workflow, planning, development-process]
+---
+
+# Development Workflow & Planning Rules
+
+## Critical Workflow Requirements
+- NEVER create or modify code without creating a plan first and confirming it with me
+- Other actions like web searches you can perform without confirmation
+- Break down complex tasks into clear, sequential steps
+- Explain the reasoning behind each step
+- Wait for user approval before proceeding with implementation
+- Provide options when multiple approaches are possible
+
+## Planning Process
+- Always create a comprehensive plan before starting any coding work
+- Identify dependencies and potential issues upfront
+- Consider multiple implementation approaches
+- Estimate complexity and time requirements
+- Break large tasks into smaller, manageable pieces
+
+## Implementation Guidelines
+- Start with the most critical or foundational components first
+- Test each component before moving to the next
+- Document decisions and reasoning
+- Consider edge cases and error scenarios
+- Plan for rollback or alternative approaches
+
+## Communication Standards
+- Explain the "why" behind decisions, not just the "what"
+- Consider the broader context and implications of each choice
+- Challenge initial solutions and explore alternatives
+- Always question assumptions and validate them before proceeding
+- Think through edge cases and potential failure points
+
+## Code Review Process
+- Review code for adherence to project standards
+- Check for proper error handling and logging
+- Verify that Winston logging is used instead of console methods
+- Ensure proper file organization and naming conventions
+- Validate that environment variables are properly managed
+
+## Example Workflow
+1. **Analysis**: Understand the requirement and current codebase
+2. **Planning**: Create detailed implementation plan with steps
+3. **Approval**: Wait for user confirmation before proceeding
+4. **Implementation**: Execute plan step by step
+5. **Testing**: Verify each component works correctly
+6. **Documentation**: Update relevant documentation
+7. **Review**: Ensure all rules and standards are followed

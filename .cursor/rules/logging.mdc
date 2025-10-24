@@ -1,0 +1,19 @@
+---
+alwaysApply: true
+---
+
+# Logging Rules
+- Always use `app/utils/log.js` wrapper - never console methods
+- Import: `const { logError, logInfo, logWarn } = require('./utils/log')`
+- Use appropriate levels: error, warn, info, debug
+- Log files in `/logs` directory (excluded from git)
+- If wrapper lacks a method, suggest adding it
+
+```javascript
+// Correct
+logInfo('Processing image', imageId);
+logError('API failed', error);
+
+// Never
+console.log('Processing');
+```
