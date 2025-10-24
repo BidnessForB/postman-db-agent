@@ -2,6 +2,7 @@
 	"info": {
 		"_postman_id": "61fb0905-d5c9-4b6f-ba15-bbdf146fb1ed",
 		"name": "Actual API Test",
+		"description": "Simple demo of how to use the dbAgent to setup and teardown test data in a collection run.\n\n\\- Setup: Executes on the first invocation of the pre-request script  \n\\- Teardown: Executes conditionally on the invocation of the collection level post-request script based on the value of a state variable (\\`teardown\\`). Set this variable on the last line of the last requests pre-request script.  \n  \nThe requests in the collection are just placeholders.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "34829850",
 		"_collection_link": "https://brkc-personal.postman.co/workspace/DBAgent~66a6a7ec-c9c4-441e-972e-692ae7c1b2da/collection/34829850-61fb0905-d5c9-4b6f-ba15-bbdf146fb1ed?action=share&source=collection_link&creator=34829850"
