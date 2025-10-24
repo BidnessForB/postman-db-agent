@@ -2,35 +2,36 @@
 	"info": {
 		"_postman_id": "3a124514-752d-42fb-8738-6003ebc9f8bb",
 		"name": "Database Agent API",
-		"description": "Complete collection for testing the Node.js Database Agent with MySQL stored procedures",
+		"description": "# Database Agent API Collection\n\n## Overview\n\nThis collection provides comprehensive testing for the Node.js Database Agent API, a lightweight REST API for MySQL database access with stored procedure support. The agent allows you to execute SQL queries and stored procedures via HTTP endpoints, making it perfect for Postman testing and integration.\n\nThe requests and other assets are set up for use with the sample database, but you can use any database you like. See the [dbAgent documentation](https://github.com/BidnessForB/postman-db-agent/blob/main/README.md) to set up your agent.\n\n## Prerequisites\n\n### 1\\. Database Agent Setup\n\n- Ensure the Database Agent is running on `http://localhost:3000`\n    \n- Database must be configured and accessible\n    \n- For testing with sample data, use the included sample database setup\n    \n\n### 2\\. Database Configuration\n\n- **Default Database**: `users` (or your custom database name)\n    \n- **Required Tables**: [<code>user</code> and <code>address</code> (if using sample database)](https://github.com/BidnessForB/postman-db-agent/blob/main/db/README.md)\n    \n- **Stored Procedures**: 8 sample procedures available (if using sample database)\n    \n\n## Collection Structure\n\n### 🏥 Health Check\n\n- **Health Check** - Verify the Database Agent is running and responsive\n    \n\n### 🔍 Custom SQL Queries\n\n- **Execute Custom SQL** - Run any SQL query with optional parameters\n    \n- **Execute SQL with Parameters** - Parameterized queries for security\n    \n\n### 📊 Stored Procedures\n\n- **Execute Stored Procedure** - Call MySQL stored procedures with parameters\n    - Sample procedures: `GetAllUsers`, `GetUserById`, `AddUser`, `AddUserWithAddress`, etc.\n        \n\n### ❌ Error Testing\n\n- **Test Invalid SQL** - Verify error handling for malformed SQL\n    \n- **Test Invalid Procedure** - Test non-existent stored procedures\n    \n- **Test Missing Procedure Name** - Validate required parameter handling\n    \n\n### 🛠️ Scripted Examples\n\n- **Raw script** - Direct implementation of database functions\n    \n- **As package** - Using the Postman package module\n    \n\n## API Endpoints\n\n### Health Check\n\n- **GET** `/health` - Check if the agent is running\n    \n- **Response**: Status, message, and timestamp\n    \n\n### Database Operations\n\n- **POST** `/api/query` - Execute custom SQL queries\n    - **Body**: `{\"query\": \"SELECT \\* FROM user\", \"params\": []}`\n        \n- **POST** `/api/procedure` - Execute stored procedures\n    - **Body**: `{\"procedure\": \"GetAllUsers\", \"params\": []}`\n        \n\n## Sample Database (Optional)\n\nIf using the included sample database, the following stored procedures are available:\n\n### User Management Procedures\n\n- **`AddUser(firstname, lastname, email)`** - Create new user\n    \n- **`AddUserWithAddress(...)`** - Create user with address\n    \n- **`UpdateUser(userid, firstname, lastname, email)`** - Update user\n    \n- **`UpdateUserAddress(...)`** - Update user and address\n    \n- **`DeleteUser(userid)`** - Delete user and address\n    \n- **`DeleteUserAddress(userid)`** - Delete address only\n    \n\n### Query Procedures\n\n- **`GetUserById(userid)`** - Get user by ID with address\n    \n- **`GetAllUsers()`** - Get all users with addresses\n    \n- **`SearchUsers(search_term)`** - Search users by name/email\n    \n\n## Response Format\n\n### Success Response\n\n``` json\n{\n  \"success\": true,\n  \"data\": [...],\n  \"count\": 5\n}\n\n ```\n\n### Error Response\n\n``` json\n{\n  \"success\": false,\n  \"error\": \"Error message\"\n}\n\n ```\n\n## Testing Workflow\n\n### 1\\. Start with Health Check\n\n- Verify the agent is running\n    \n- Check response time and status\n    \n\n### 2\\. Test Basic Queries\n\n- Execute simple SELECT queries\n    \n- Test parameterized queries\n    \n- Verify data retrieval\n    \n\n### 3\\. Test Stored Procedures\n\n- Call sample procedures (if using sample database)\n    \n- Test with different parameters\n    \n- Verify complex operations\n    \n\n### 4\\. Error Handling\n\n- Test invalid SQL syntax\n    \n- Test non-existent procedures\n    \n- Verify error responses\n    \n\n### 5\\. Performance Testing\n\n- Test with large result sets\n    \n- Monitor response times\n    \n- Check connection handling\n    \n\n## Environment Variables\n\nThe collection uses these variables:\n\n- **`base_url`** - API base URL (default: `http://localhost:3000`)\n    \n- **`queryResults`** - Store query results\n    \n- **`procResults`** - Store procedure results\n    \n\n## Scripted Testing\n\n### Raw Script Implementation\n\nThe collection includes direct implementations of:\n\n- `sendSQL(querySql)` - Execute SQL queries\n    \n- `execProcedure(procName, params)` - Execute stored procedures\n    \n\n### Package Module Usage\n\nFor advanced testing, use the included [Postman package](https://github.com/BidnessForB/postman-db-agent/blob/main/postman/postman-dbagent-package.js):\n\n``` javascript\nconst { sendSQL, execProcedure } = pm.require('@brkc-personal/get-custom-sql');\n\n ```\n\n## Best Practices\n\n### Security\n\n- Use parameterized queries to prevent SQL injection\n    \n- Validate input parameters\n    \n- Test error conditions thoroughly\n    \n\n### Performance\n\n- Limit result sets with appropriate WHERE clauses\n    \n- Use indexes for better query performance\n    \n- Monitor response times\n    \n\n### Testing\n\n- Test both success and error scenarios\n    \n- Verify data integrity\n    \n- Test with different data types and sizes\n    \n\n## Troubleshooting\n\n### Common Issues\n\n1. **Connection Refused** - Database Agent not running\n    \n2. **Database Error** - Invalid database configuration\n    \n3. **Procedure Not Found** - Stored procedures not installed\n    \n\n### Debug Steps\n\n1. Check Database Agent status with Health Check\n    \n2. Verify database connection in `.env` file\n    \n3. Test with simple SQL queries first\n    \n4. Check stored procedure installation\n    \n\n## Integration\n\nThis collection is designed to work with:\n\n- **Postman Runner** - Automated testing\n    \n- **Newman** - Command-line testing\n    \n- **CI/CD Pipelines** - Continuous integration\n    \n- **API Documentation** - Generate docs from collection\n    \n\n## Support\n\nFor issues or questions:\n\n- Check the project README.md\n    \n- Review database setup documentation\n    \n- Test with sample database first\n    \n- Verify all prerequisites are met\n    \n\n---\n\n**Note**: This collection is designed to work with the Node.js Database Agent. Ensure the agent is properly configured and running before executing tests.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "34829850",
 		"_collection_link": "https://brkc-personal.postman.co/workspace/DBAgent~66a6a7ec-c9c4-441e-972e-692ae7c1b2da/collection/34829850-3a124514-752d-42fb-8738-6003ebc9f8bb?action=share&source=collection_link&creator=34829850"
 	},
 	"item": [
 		{
-			"name": "Health Check",
+			"name": "Status",
 			"item": [
 				{
-					"name": "Health Check",
+					"name": "Status",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/health",
+							"raw": "http://localhost:3000/status",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3000",
 							"path": [
-								"health"
+								"status"
 							]
-						}
+						},
+						"description": "### Endpoint: GET /status\n\nThis endpoint is used to retrieve the current status of the application. It provides a simple way to check if the service is operational and to gather basic information about its state.\n\n#### Request Parameters\n\nThis endpoint does not require any request parameters.\n\n#### Expected Response\n\nThe response will be in JSON format and includes the following fields:\n\n- **status**: A string indicating the current status of the application.\n    \n- **message**: A string that may contain additional information or context related to the status.\n    \n- **timestamp**: A string representing the time at which the status was retrieved, typically in ISO 8601 format.\n    \n\n#### Example Response\n\n``` json\n{\n  \"status\": \"OK\",\n  \"message\": \"Service is running smoothly.\",\n  \"timestamp\": \"2023-10-01T12:00:00Z\"\n}\n\n ```\n\n#### Notes\n\n- This endpoint is useful for health checks and monitoring the application's availability.\n    \n- Ensure that the service is running before making this request to receive a valid response."
 					},
 					"response": [
 						{
-							"name": "Health Check",
+							"name": "200 Status",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
@@ -48,7 +49,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "X-Powered-By",
@@ -60,7 +61,9 @@
 								},
 								{
 									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
+									"value": "application/json",
+									"description": "",
+									"type": "text"
 								},
 								{
 									"key": "Content-Length",
@@ -105,7 +108,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"query\": \"SELECT * FROM user LIMIT 5\",\n  \"params\": []\n}"
+							"raw": "{\n  \"query\": \"SELECT * FROM user \",\n  \"params\": []\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/api/query",
@@ -118,7 +121,8 @@
 								"api",
 								"query"
 							]
-						}
+						},
+						"description": "### API Endpoint: Query Data\n\nThis endpoint allows you to execute a SQL query against the database and retrieve the results. It is particularly useful for fetching user data based on specific criteria.\n\n#### Request\n\n- **Method**: POST\n    \n- **URL**: `http://localhost:3000/api/query`\n    \n- **Content-Type**: application/json\n    \n\n##### Request Body\n\nThe request body must be in JSON format and should contain the following parameters:\n\n- `query` (string): The SQL query string to be executed. For example, you might use a query like `\"SELECT \\* FROM user WHERE first ...\"` to fetch user details.\n    \n- `params` (array of strings): An array of parameters to be used in the SQL query. For instance, `[\"Sarah\"]` can be used to filter results based on the first name.\n    \n\nExample of a request body:\n\n``` json\n{\n  \"query\": \"SELECT * FROM user WHERE first ...\",\n  \"params\": [\"Sarah\"]\n}\n\n ```\n\n#### Response\n\nUpon successful execution, the API will return a response in JSON format with the following structure:\n\n- `success` (boolean): Indicates whether the query execution was successful.\n    \n- `data` (array of objects): Contains the results of the query. Each object in the array represents a user and includes fields such as `userid`, `firstname`, `lastname`, `email`, `created_at`, and `updated_at`.\n    \n- `count` (integer): The number of records returned by the query.\n    \n\nExample of a response:\n\n``` json\n{\n  \"success\": true,\n  \"data\": [\n    {\n      \"userid\": 0,\n      \"firstname\": \"\",\n      \"lastname\": \"\",\n      \"email\": \"\",\n      \"created_at\": \"\",\n      \"updated_at\": \"\"\n    }\n  ],\n  \"count\": 0\n}\n\n ```\n\nThis structure allows you to easily interpret the results of your query and handle them in your application."
 					},
 					"response": [
 						{
@@ -150,7 +154,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "X-Powered-By",
@@ -162,7 +166,9 @@
 								},
 								{
 									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
+									"value": "application/json",
+									"description": "",
+									"type": "text"
 								},
 								{
 									"key": "Content-Length",
@@ -187,37 +193,7 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"userid\": 1,\n            \"firstname\": \"John\",\n            \"lastname\": \"Smith\",\n            \"email\": \"john.smith@email.com\",\n            \"created_at\": \"2025-10-24T02:02:24.000Z\",\n            \"updated_at\": \"2025-10-24T02:02:24.000Z\"\n        },\n        {\n            \"userid\": 2,\n            \"firstname\": \"Sarah\",\n            \"lastname\": \"Johnson\",\n            \"email\": \"sarah.johnson@email.com\",\n            \"created_at\": \"2025-10-24T02:02:24.000Z\",\n            \"updated_at\": \"2025-10-24T02:02:24.000Z\"\n        },\n        {\n            \"userid\": 3,\n            \"firstname\": \"Michael\",\n            \"lastname\": \"Brown\",\n            \"email\": \"michael.brown@email.com\",\n            \"created_at\": \"2025-10-24T02:02:24.000Z\",\n            \"updated_at\": \"2025-10-24T02:02:24.000Z\"\n        },\n        {\n            \"userid\": 4,\n            \"firstname\": \"Emily\",\n            \"lastname\": \"Davis\",\n            \"email\": \"emily.davis@email.com\",\n            \"created_at\": \"2025-10-24T02:02:24.000Z\",\n            \"updated_at\": \"2025-10-24T02:02:24.000Z\"\n        },\n        {\n            \"userid\": 5,\n            \"firstname\": \"David\",\n            \"lastname\": \"Wilson\",\n            \"email\": \"david.wilson@email.com\",\n            \"created_at\": \"2025-10-24T02:02:24.000Z\",\n            \"updated_at\": \"2025-10-24T02:02:24.000Z\"\n        }\n    ],\n    \"count\": 5\n}"
-						}
-					]
-				},
-				{
-					"name": "Execute SQL with Parameters",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"query\": \"SELECT * FROM user WHERE firstname = ?\",\n  \"params\": [\"John\"]\n}"
 						},
-						"url": {
-							"raw": "http://localhost:3000/api/query",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"query"
-							]
-						}
-					},
-					"response": [
 						{
 							"name": "200 Execute SQL with Parameters",
 							"originalRequest": {
@@ -225,12 +201,18 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"query\": \"SELECT * FROM user WHERE firstname = ?\",\n  \"params\": [\"John\"]\n}"
+									"raw": "{\n  \"query\": \"SELECT * FROM user WHERE firstname = ?\",\n  \"params\": [\"Sarah\"]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
 								},
 								"url": {
 									"raw": "http://localhost:3000/api/query",
@@ -247,7 +229,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "X-Powered-By",
@@ -259,7 +241,9 @@
 								},
 								{
 									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
+									"value": "application/json",
+									"description": "",
+									"type": "text"
 								},
 								{
 									"key": "Content-Length",
@@ -304,7 +288,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"procedure\": \"AddUserWithAddress\",\n  \"params\": [\"Fred\", \"Gill\", \"fred.gill@yahoo.com\", \"123 Test St\", \"Test City\", \"TS\", \"12345\", \"USA\"]\n}"
+							"raw": "{\n  \"procedure\": \"AddUserWithAddress\",\n  \"params\": [\"Jehosephat\", \"Murphy\", \"jmurphy@aol.com\", \"123 Test St\", \"Test City\", \"TS\", \"12345\", \"USA\"]\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/api/procedure",
@@ -317,22 +301,29 @@
 								"api",
 								"procedure"
 							]
-						}
+						},
+						"description": "## API Endpoint: Add Procedure\n\nThis endpoint is used to execute a specified procedure on the server. The current implementation supports adding a user with their associated address details.\n\n### Request\n\n- **Method**: POST\n    \n- **URL**: `http://localhost:3000/api/procedure`\n    \n- **Content-Type**: application/json\n    \n\n#### Request Body\n\nThe request body should be in JSON format and must contain the following parameters:\n\n- **procedure** (string): The name of the procedure to be executed. For adding a user, this should be set to `\"AddUserWithAddress\"`.\n    \n- **params** (array of strings): An array containing the parameters required for the procedure. In this case, it includes the user's first name.\n    \n\n**Example Request Body**:\n\n``` json\n{\n  \"procedure\": \"AddUserWithAddress\",\n  \"params\": [\"Fred\"]\n}\n\n ```\n\n### Response\n\nThe response will be returned in JSON format and will include the following fields:\n\n- **success** (boolean): Indicates whether the operation was successful.\n    \n- **data** (array): Contains the result of the procedure execution. The structure may vary based on the operation performed:\n    \n    - For adding a user, it may return user details or a confirmation of the new user ID.\n        \n    - { \"userid\": 0, \"firstname\": \"\", \"lastname\": \"\", \"email\": \"\", \"created_at\": \"\", \"addressid\": 0, \"street\": \"\", \"city\": \"\", \"state\": \"\", \"zipcode\": \"\", \"country\": \"\"}\n        \n    - { \"new_user_id\": 0}\n        \n- **count** (integer): Represents the number of records returned in the response.\n    \n- **procedure** (string): Echoes the procedure name that was executed.\n    \n\n### Notes\n\n- Ensure that appropriate authentication headers are included if required by your API setup.\n    \n- The request must be sent with the correct `Content-Type` header set to `application/json` to ensure proper handling of the request body."
 					},
 					"response": [
 						{
-							"name": "GetUserById",
+							"name": "200 GetUserById",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
 									{
 										"key": "Content-Type",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"procedure\": \"GetUserById\",\n  \"params\": [1]\n}"
+									"raw": "{\n  \"procedure\": \"GetUserById\",\n  \"params\": [1]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
 								},
 								"url": {
 									"raw": "http://localhost:3000/api/procedure",
@@ -349,7 +340,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "X-Powered-By",
@@ -361,7 +352,9 @@
 								},
 								{
 									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
+									"value": "application/json",
+									"description": "",
+									"type": "text"
 								},
 								{
 									"key": "Content-Length",
@@ -388,7 +381,7 @@
 							"body": "{\n    \"success\": true,\n    \"data\": [\n        [\n            {\n                \"userid\": 1,\n                \"firstname\": \"John\",\n                \"lastname\": \"Smith\",\n                \"email\": \"john.smith@email.com\",\n                \"created_at\": \"2025-10-24T02:02:24.000Z\",\n                \"addressid\": 1,\n                \"street\": \"123 Main Street\",\n                \"city\": \"New York\",\n                \"state\": \"NY\",\n                \"zipcode\": \"10001\",\n                \"country\": \"USA\"\n            }\n        ],\n        {\n            \"fieldCount\": 0,\n            \"affectedRows\": 0,\n            \"insertId\": 0,\n            \"info\": \"\",\n            \"serverStatus\": 2,\n            \"warningStatus\": 0,\n            \"changedRows\": 0\n        }\n    ],\n    \"count\": 2,\n    \"procedure\": \"GetUserById\"\n}"
 						},
 						{
-							"name": "CreateUserWithAddress",
+							"name": "200 CreateUserWithAddress",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -416,7 +409,7 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "X-Powered-By",
@@ -428,7 +421,9 @@
 								},
 								{
 									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
+									"value": "application/json",
+									"description": "",
+									"type": "text"
 								},
 								{
 									"key": "Content-Length",
@@ -453,6 +448,81 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"success\": true,\n    \"data\": [\n        [\n            {\n                \"new_user_id\": 9\n            }\n        ],\n        {\n            \"fieldCount\": 0,\n            \"affectedRows\": 0,\n            \"insertId\": 0,\n            \"info\": \"\",\n            \"serverStatus\": 16386,\n            \"warningStatus\": 0,\n            \"changedRows\": 0\n        }\n    ],\n    \"count\": 2,\n    \"procedure\": \"AddUserWithAddress\"\n}"
+						},
+						{
+							"name": "500 CreateUserWithAddress Copy",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"procedure\": \"AddUserWithAddress\",\n  \"params\": \"foo\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procedure",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"procedure"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "200"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"c8-tQ4qYsmpDXeKCm475l/OAEFPgQk\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 24 Oct 2025 02:25:12 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"error\": \"Duplicate entry 'fred.gill@yahoo.com' for key 'user.email'\"\n}"
 						}
 					]
 				}
@@ -490,7 +560,7 @@
 					},
 					"response": [
 						{
-							"name": "Test Invalid SQL",
+							"name": "500 Test Invalid SQL",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -518,7 +588,7 @@
 							},
 							"status": "Internal Server Error",
 							"code": 500,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "X-Powered-By",
@@ -530,7 +600,9 @@
 								},
 								{
 									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
+									"value": "application/json",
+									"description": "",
+									"type": "text"
 								},
 								{
 									"key": "Content-Length",
@@ -587,7 +659,7 @@
 					},
 					"response": [
 						{
-							"name": "Test Invalid Procedure",
+							"name": "500 Test Invalid Procedure",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -615,7 +687,7 @@
 							},
 							"status": "Internal Server Error",
 							"code": 500,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "X-Powered-By",
@@ -627,7 +699,9 @@
 								},
 								{
 									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
+									"value": "application/json",
+									"description": "",
+									"type": "text"
 								},
 								{
 									"key": "Content-Length",
@@ -684,7 +758,7 @@
 					},
 					"response": [
 						{
-							"name": "Test Missing Procedure Name",
+							"name": "500 Test Missing Procedure Name",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -712,7 +786,7 @@
 							},
 							"status": "Bad Request",
 							"code": 400,
-							"_postman_previewlanguage": null,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "X-Powered-By",
@@ -724,7 +798,9 @@
 								},
 								{
 									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
+									"value": "application/json",
+									"description": "",
+									"type": "text"
 								},
 								{
 									"key": "Content-Length",
@@ -764,6 +840,50 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"/**",
+									" * Database Agent Postman Package",
+									" * ",
+									" * This package provides utility functions to interact with the database agent",
+									" * from within Postman scripts. It encapsulates the HTTP requests to the",
+									" * database agent API endpoints.",
+									" * ",
+									" * Prerequisites:",
+									" * - Database agent must be running on http://localhost:3000",
+									" * - Database must be set up with the required schema and stored procedures",
+									" * ",
+									" * Available Functions:",
+									" * - sendSQL(querySql) - Execute custom SQL queries",
+									" * - execProcedure(procName, params) - Execute stored procedures",
+									" * ",
+									" * @author Database Agent Team",
+									" * @version 1.0.0",
+									" */",
+									"",
+									"/**",
+									" * Sends a SQL query to the database agent",
+									" * ",
+									" * @param {Object} querySql - The SQL query object",
+									" * @param {string} querySql.query - The SQL query string",
+									" * @param {Array} querySql.params - Array of parameters for the query (optional)",
+									" * ",
+									" * @returns {Promise<Object>} Promise that resolves with the query results",
+									" * ",
+									" * @example",
+									" * // Simple SELECT query",
+									" * const query = {",
+									" *     \"query\": \"SELECT * FROM user LIMIT 5\",",
+									" *     \"params\": []",
+									" * };",
+									" * const results = await sendSQL(query);",
+									" * ",
+									" * @example",
+									" * // Parameterized query",
+									" * const query = {",
+									" *     \"query\": \"SELECT * FROM user WHERE userid = ?\",",
+									" *     \"params\": [1]",
+									" * };",
+									" * const results = await sendSQL(query);",
+									" */",
 									"function sendSQL(querySql) {",
 									"",
 									"    const request = {",
@@ -783,27 +903,87 @@
 									"    }",
 									"",
 									"",
-									"    ",
-									"        return new Promise((resolve, reject) => {",
-									"            pm.sendRequest(request, (error, response) => {",
-									"                if (error) {",
-									"                // console.log(error);",
-									"                    reject(\"Request failed: \", err);",
-									"                }",
-									"                const responseBody = response.json();",
-									"                ",
-									"                resolve(responseBody);",
-									"            });",
 									"",
+									"    return new Promise((resolve, reject) => {",
+									"        try {",
+									"            pm.sendRequest(request, (error, response) => {",
+									"                if (error) { //dbAgent not running, probably",
+									"                    //console.log('sendSQL request error:', error.message);",
+									"                    reject(error);",
+									"                }",
+									"                else {",
+									"",
+									"                    try {",
+									"                        response.json();",
+									"",
+									"                    } catch (parseErr) {",
+									"                        //console.log('sendSQL response parse error:', parseErr);",
+									"                        reject(parseErr);",
+									"                    }",
+									"                    if (response?.code && response.code !== 200) {",
+									"                        //console.log('sendSQL non-OK status:', response.json());",
+									"                        reject('Request failed with status ' + response.code + ' ' + JSON.stringify(response.json()));",
+									"                    }",
+									"                    else if (response?.code === 200 && !response.success === 'true') {",
+									"                        //console.log(\"SQL error: \", response.json());",
+									"                        reject(response.json());",
+									"                    }",
+									"                    else {",
+									"                        //console.log(\"All good\")",
+									"                        resolve(response.json());",
+									"                    }",
+									"                }",
+									"",
+									"            });",
+									"        } catch (err) {",
+									"            //console.log.log('sendSQL unexpected error:', err);",
+									"            reject('Unexpected error' + err.message);",
+									"        }",
 									"",
 									"    });",
-									"    ",
+									"",
 									"}",
 									"",
+									"/**",
+									" * Executes a stored procedure through the database agent",
+									" * ",
+									" * @param {string} procName - The name of the stored procedure to execute",
+									" * @param {Array} params - Array of parameters to pass to the stored procedure",
+									" * ",
+									" * @returns {Promise<Object>} Promise that resolves with the procedure results",
+									" * ",
+									" * @example",
+									" * // Get all users",
+									" * const results = await execProcedure(\"GetAllUsers\", []);",
+									" * ",
+									" * @example",
+									" * // Get user by ID",
+									" * const results = await execProcedure(\"GetUserById\", [1]);",
+									" * ",
+									" * @example",
+									" * // Add a new user",
+									" * const results = await execProcedure(\"AddUser\", [\"John\", \"Doe\", \"john.doe@email.com\"]);",
+									" * ",
+									" * @example",
+									" * // Update user with address",
+									" * const results = await execProcedure(\"UpdateUserAddress\", [",
+									" *     1, \"John\", \"Smith\", \"john.smith@email.com\",",
+									" *     \"123 Main St\", \"New York\", \"NY\", \"10001\", \"USA\"",
+									" * ]);",
+									" */",
 									"function execProcedure(procName, params) {",
+									"    return new Promise((resolve, reject) => {",
 									"    const body = {",
-									"        \"procedure\": procName,",
-									"        \"params\":params",
+									"        \"procedure\": procName",
+									"    }",
+									"    if (params && Array.isArray(params)) {",
+									"        body.params = params;",
+									"    }",
+									"    else if(params) {",
+									"        console.log(\"Problem with params: \", params)",
+									"        reject(new Error(\"Invalid params: \" + params));",
+									"        return;",
+									"        ",
 									"    }",
 									"    const request = {",
 									"        url: \"http://localhost:3000/api/procedure\",",
@@ -815,47 +995,86 @@
 									"            mode: \"raw\",",
 									"            raw: JSON.stringify(",
 									"                body",
-									"",
-									"",
 									"            )",
 									"        }",
 									"    }",
 									"",
 									"",
-									"    ",
-									"        return new Promise((resolve, reject) => {",
-									"        pm.sendRequest(request, (error, response) => {",
-									"            if (error) {",
-									"               // console.log(error);",
-									"                reject(\"Request failed: \", err);",
-									"            }",
-									"            const responseBody = response.json();",
-									"            ",
-									"            resolve(responseBody);",
-									"        });",
 									"",
+									"    ",
+									"        pm.sendRequest(request, (error, response) => {",
+									"            //console.log(error, response);",
+									"            if (error) { //dbAgent not running, probably",
+									"                    //console.log('execProcedure request error:', error.message);",
+									"                    reject(error);",
+									"                }",
+									"            else if (response?.code != 200) {",
+									"                //console.log('execProcedure non-200:', response.json());",
+									"                reject(new Error(JSON.stringify(response.json())));",
+									"                return;",
+									"            }",
+									"            else {",
+									"",
+									"                    try {",
+									"                        response.json();",
+									"",
+									"                    } catch (parseErr) {",
+									"                        //console.log('sendSQL response parse error:', parseErr);",
+									"                        reject(parseErr);",
+									"                    }",
+									"                    if (response?.code && response.code !== 200) {",
+									"                        //console.log('execProcedure non-OK status:', response.json());",
+									"                        reject('Request failed with status ' + response.code + ' ' + JSON.stringify(response.json()));",
+									"                    }",
+									"                    else if (response?.code === 200 && !response.success === 'true') {",
+									"                        //console.log(\"SQL error: \", response.json());",
+									"                        reject(response.json());",
+									"                    }",
+									"                    else {",
+									"                        //console.log(\"All good\", error)",
+									"                        resolve(response.json());",
+									"                    }",
+									"                }",
+									"        });",
+									"        ",
 									"",
 									"    });",
-									"    ",
+									"",
 									"}",
 									"",
-									"query = {",
-									"                    \"query\": \"SELECT * FROM user LIMIT 5\",",
-									"                    \"params\": []",
-									"                }",
-									"const results = sendSQL(query).then((res) => {",
-									"    console.log(\"sendSQL: \", res);",
-									"});",
-									"    ",
 									"",
 									"",
-									"const procName = \"GetUserById\";",
-									"const params = [1];",
-									"const procResults = execProcedure(procName, params).then((res) => {",
-									"    console.log(\"execProcedure: \", res);",
-									"});    ",
 									"",
-									""
+									"const query = {",
+									"    \"query\": \"SELECT * FROM user LIMIT 5\"",
+									"};",
+									"",
+									"sendSQL(query)",
+									"    .then((res, err) => {",
+									"        if (err) {",
+									"            console.log(\"sendSQL Error: \", err);",
+									"        }",
+									"        else if (res) {",
+									"            console.log(\"sendSQL: \", res)",
+									"        }",
+									"    })",
+									"    .catch((err) => {",
+									"        console.log(\"ERROR!! \")",
+									"    });",
+									"",
+									"",
+									"",
+									"/*const params = [\"Mike\", \"Meyers\", \"scary@yahoo.com\", \"123 Test St\", \"Test City\", \"TS\", \"12345\", \"USA\"];",
+									"//const params = \"foo\";",
+									"const procName = \"addUserWithAddress\"",
+									"execProcedure(procName, params)",
+									"    .then((results) => {",
+									"        console.log('execProcedure: ', results);",
+									"    })",
+									"    .catch((err) => {",
+									"        console.error('execProcedure error: ', err);",
+									"    });",
+									"    */"
 								],
 								"type": "text/javascript",
 								"packages": {},
@@ -876,7 +1095,8 @@
 							"path": [
 								"get"
 							]
-						}
+						},
+						"description": "## Using dbAgent in scripts\n\nThis is a sample request showing how to encapsulate dbAgent functionality in test script functions. The request itself does nothing."
 					},
 					"response": []
 				},
@@ -887,7 +1107,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const { sendSQL, execProcedure } = pm.require('@brkc-personal/get-custom-sql');",
+									"const {sendSQL, execProcedure} = pm.require('@brkc-personal/get-custom-sql');",
+									"",
 									"",
 									"",
 									"query = {",
@@ -895,16 +1116,25 @@
 									"    \"params\": []",
 									"}",
 									"",
-									"sendSQL(query, 'queryResults').then((res) => {",
-									"    console.log('sendSQL: ', res);",
-									"});",
+									"sendSQL(query)",
+									"    .then((res, err) => {",
+									"        if (err) {",
+									"            console.log(\"sendSQL Error: \", err);",
+									"        }",
+									"        else if (res) {",
+									"            console.log(\"sendSQL: \", res)",
+									"        }",
+									"    })",
+									"    .catch((err) => {",
+									"        console.log(\"ERROR!! \")",
+									"    });",
 									"",
 									"const procName = \"GetUserById\";",
 									"const params = [1];",
 									"",
-									"execProcedure(procName, params, 'procResults').then((res) => {",
-									"    console.log('execProcedure: ', res);",
-									"});;",
+									"execProcedure(procName, params, 'procResults').then((res, err) => {",
+									"    console.log('execProcedure: ', res, err);",
+									"});",
 									""
 								],
 								"type": "text/javascript",
