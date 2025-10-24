@@ -12,6 +12,11 @@ This project provides a REST API that acts as a database agent, allowing you to:
 - Access your database from Postman or any HTTP client
 - Use your own database or the included sample database
 
+## Use cases
+ - Setup initial test data
+ - Cleanup DBs after test runs
+ - Retrieve data for use in validating that requests/collection runs created the correct data in the DB
+
 ## Quick Start
 
 ### 1. Install Dependencies
