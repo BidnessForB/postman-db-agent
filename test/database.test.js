@@ -5,100 +5,112 @@
 
 const mysql = require('mysql2/promise');
 
-// Mock database functions
-const mockExecuteQuery = async (sql, params = []) => {
-  try {
-    // Simulate successful query execution
-    if (sql.includes('SELECT 1')) {
-      return { success: true, data: [{ test: 1 }] };
-    }
-    if (sql.includes('SELECT ?')) {
-      return { success: true, data: [{ param: params[0] }] };
-    }
-    if (sql.includes('CONNECTION_ID')) {
-      return { success: true, data: [{ connection_id: 12345 }] };
-    }
-    if (sql.includes('INVALID')) {
-      throw new Error('Invalid SQL syntax');
-    }
-    return { success: true, data: [] };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
+// Mock mysql2/promise before importing dbAgent
+jest.mock('mysql2/promise');
+
+// Mock database pool
+const mockPool = {
+  execute: jest.fn(),
+  end: jest.fn()
 };
 
-const mockExecuteStoredProcedure = async (procedureName, params = []) => {
-  try {
-    // Simulate stored procedure execution
-    if (procedureName === 'GetAllUsers') {
-      return { success: true, data: [{ userid: 1, firstname: 'Test', lastname: 'User' }] };
-    }
-    if (procedureName === 'GetUserById') {
-      return { success: true, data: [{ userid: params[0], firstname: 'Test', lastname: 'User' }] };
-    }
-    if (procedureName === 'NonExistentProcedure') {
-      throw new Error('Procedure does not exist');
-    }
-    return { success: true, data: [] };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-};
+mysql.createPool.mockReturnValue(mockPool);
+
+// Import the actual dbAgent module after mocking
+const dbAgent = require('../dbAgent');
 
 describe('Database Functions', () => {
+  beforeEach(() => {
+    // Reset mocks before each test
+    jest.clearAllMocks();
+    // Set up the dbPool for testing
+    dbAgent.dbPool = mockPool;
+  });
+
+  beforeAll(() => {
+    // Set up the dbPool for testing
+    dbAgent.dbPool = mockPool;
+  });
+
   describe('executeQuery', () => {
     test('should execute simple SELECT query successfully', async () => {
-      const result = await mockExecuteQuery('SELECT 1 as test');
+      // Mock successful query execution - mysql2 returns [rows, fields]
+      mockPool.execute.mockResolvedValue([[{ test: 1 }], []]);
+      
+      const result = await dbAgent.executeQuery('SELECT 1 as test');
       
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
       expect(result.data[0].test).toBe(1);
+      expect(mockPool.execute).toHaveBeenCalledWith('SELECT 1 as test', []);
     });
 
     test('should execute parameterized query', async () => {
-      const result = await mockExecuteQuery('SELECT ? as param', ['test_value']);
+      // Mock successful parameterized query - mysql2 returns [rows, fields]
+      mockPool.execute.mockResolvedValue([[{ param: 'test_value' }], []]);
+      
+      const result = await dbAgent.executeQuery('SELECT ? as param', ['test_value']);
       
       expect(result.success).toBe(true);
       expect(result.data[0].param).toBe('test_value');
+      expect(mockPool.execute).toHaveBeenCalledWith('SELECT ? as param', ['test_value']);
     });
 
     test('should handle invalid SQL gracefully', async () => {
-      const result = await mockExecuteQuery('INVALID SQL QUERY');
+      // Mock database error
+      mockPool.execute.mockRejectedValue(new Error('Invalid SQL syntax'));
+      
+      const result = await dbAgent.executeQuery('INVALID SQL QUERY');
       
       expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
+      expect(result.error).toBe('Invalid SQL syntax');
     });
 
     test('should handle empty parameters array', async () => {
-      const result = await mockExecuteQuery('SELECT 1 as test', []);
+      // Mock successful query with empty params - mysql2 returns [rows, fields]
+      mockPool.execute.mockResolvedValue([[{ test: 1 }], []]);
+      
+      const result = await dbAgent.executeQuery('SELECT 1 as test', []);
       
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
+      expect(mockPool.execute).toHaveBeenCalledWith('SELECT 1 as test', []);
     });
   });
 
   describe('executeStoredProcedure', () => {
     test('should execute stored procedure with no parameters', async () => {
-      const result = await mockExecuteStoredProcedure('GetAllUsers', []);
+      // Mock successful stored procedure execution - mysql2 returns [rows, fields]
+      mockPool.execute.mockResolvedValue([[{ userid: 1, firstname: 'Test', lastname: 'User' }], []]);
+      
+      const result = await dbAgent.executeStoredProcedure('GetAllUsers', []);
       
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
       expect(result.data[0].userid).toBe(1);
+      expect(mockPool.execute).toHaveBeenCalledWith('CALL GetAllUsers()', []);
     });
 
     test('should execute stored procedure with parameters', async () => {
-      const result = await mockExecuteStoredProcedure('GetUserById', [1]);
+      // Mock successful stored procedure with parameters - mysql2 returns [rows, fields]
+      mockPool.execute.mockResolvedValue([[{ userid: 1, firstname: 'Test', lastname: 'User' }], []]);
+      
+      const result = await dbAgent.executeStoredProcedure('GetUserById', [1]);
       
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
       expect(result.data[0].userid).toBe(1);
+      expect(mockPool.execute).toHaveBeenCalledWith('CALL GetUserById(?)', [1]);
     });
 
     test('should handle non-existent procedure gracefully', async () => {
-      const result = await mockExecuteStoredProcedure('NonExistentProcedure', []);
+      // Mock database error for non-existent procedure
+      mockPool.execute.mockRejectedValue(new Error('Procedure does not exist'));
+      
+      const result = await dbAgent.executeStoredProcedure('NonExistentProcedure', []);
       
       expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
+      expect(result.error).toBe('Procedure does not exist');
     });
   });
 

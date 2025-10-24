@@ -4,153 +4,37 @@
  */
 
 const request = require('supertest');
-const express = require('express');
-const cors = require('cors');
+const mysql = require('mysql2/promise');
 
-// Create a test version of the app
-const createTestApp = () => {
-  const app = express();
-  
-  // Middleware
-  app.use(express.json());
-  app.use(cors());
-  
-  // Mock database functions
-  const executeQuery = async (sql, params = []) => {
-    try {
-      if (sql.includes('SELECT 1')) {
-        return { success: true, data: [{ test: 1 }] };
-      }
-      if (sql.includes('SELECT ?')) {
-        return { success: true, data: [{ param: params[0] }] };
-      }
-      if (sql.includes('INVALID')) {
-        throw new Error('Invalid SQL syntax');
-      }
-      return { success: true, data: [] };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
-  
-  const executeStoredProcedure = async (procedureName, params = []) => {
-    try {
-      if (procedureName === 'GetAllUsers') {
-        return { success: true, data: [{ userid: 1, firstname: 'Test', lastname: 'User' }] };
-      }
-      if (procedureName === 'GetUserById') {
-        return { success: true, data: [{ userid: params[0], firstname: 'Test', lastname: 'User' }] };
-      }
-      if (procedureName === 'NonExistentProcedure') {
-        throw new Error('Procedure does not exist');
-      }
-      return { success: true, data: [] };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
-  
-  // API Routes
-  app.get('/status', (req, res) => {
-    res.json({ 
-      status: 'ok', 
-      message: 'Database agent is running',
-      timestamp: new Date().toISOString()
-    });
-  });
-  
-  app.post('/api/query', async (req, res) => {
-    try {
-      const { query, params = [] } = req.body;
-      
-      if (!query) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'SQL query is required' 
-        });
-      }
-      
-      const result = await executeQuery(query, params);
-      
-      if (result.success) {
-        res.json({
-          success: true,
-          data: result.data,
-          count: result.data.length
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          error: result.error
-        });
-      }
-      
-    } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        error: 'Internal server error' 
-      });
-    }
-  });
-  
-  app.post('/api/procedure', async (req, res) => {
-    try {
-      const { procedure, params = [] } = req.body;
-      
-      if (!procedure) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Procedure name is required' 
-        });
-      }
-      
-      const result = await executeStoredProcedure(procedure, params);
-      
-      if (result.success) {
-        res.json({
-          success: true,
-          data: result.data,
-          count: result.data.length,
-          procedure: procedure
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          error: result.error
-        });
-      }
-      
-    } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        error: 'Internal server error' 
-      });
-    }
-  });
-  
-  // Error handling
-  app.use((err, req, res, next) => {
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    });
-  });
-  
-  app.use((req, res) => {
-    res.status(404).json({
-      success: false,
-      error: 'Endpoint not found'
-    });
-  });
-  
-  return app;
+// Mock mysql2/promise before importing dbAgent
+jest.mock('mysql2/promise');
+
+// Mock database pool
+const mockPool = {
+  execute: jest.fn(),
+  end: jest.fn()
 };
+
+mysql.createPool.mockReturnValue(mockPool);
+
+// Import the actual dbAgent module after mocking
+const dbAgent = require('../dbAgent');
 
 describe('API Tests', () => {
   let app;
   
   beforeAll(() => {
-    app = createTestApp();
+    // Get the Express app from dbAgent
+    app = dbAgent.app;
+    // Set up the dbPool for testing
+    dbAgent.dbPool = mockPool;
+  });
+
+  beforeEach(() => {
+    // Reset mocks before each test
+    jest.clearAllMocks();
+    // Set up the dbPool for testing
+    dbAgent.dbPool = mockPool;
   });
   
   describe('GET /status', () => {
@@ -167,6 +51,9 @@ describe('API Tests', () => {
   
   describe('POST /api/query', () => {
     test('should execute simple SELECT query', async () => {
+      // Mock successful query execution - mysql2 returns [rows, fields]
+      mockPool.execute.mockResolvedValue([[{ test: 1 }], []]);
+      
       const response = await request(app)
         .post('/api/query')
         .send({
@@ -179,9 +66,13 @@ describe('API Tests', () => {
       expect(response.body.data).toBeDefined();
       expect(response.body.data[0].test).toBe(1);
       expect(response.body.count).toBe(1);
+      expect(mockPool.execute).toHaveBeenCalledWith('SELECT 1 as test', []);
     });
     
     test('should execute parameterized query', async () => {
+      // Mock successful parameterized query - mysql2 returns [rows, fields]
+      mockPool.execute.mockResolvedValue([[{ param: 'test_value' }], []]);
+      
       const response = await request(app)
         .post('/api/query')
         .send({
@@ -192,6 +83,7 @@ describe('API Tests', () => {
       
       expect(response.body.success).toBe(true);
       expect(response.body.data[0].param).toBe('test_value');
+      expect(mockPool.execute).toHaveBeenCalledWith('SELECT ? as param', ['test_value']);
     });
     
     test('should return error for missing query', async () => {
@@ -205,6 +97,9 @@ describe('API Tests', () => {
     });
     
     test('should handle invalid SQL gracefully', async () => {
+      // Mock database error
+      mockPool.execute.mockRejectedValue(new Error('Invalid SQL syntax'));
+      
       const response = await request(app)
         .post('/api/query')
         .send({
@@ -214,12 +109,15 @@ describe('API Tests', () => {
         .expect(500);
       
       expect(response.body.success).toBe(false);
-      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Invalid SQL syntax');
     });
   });
   
   describe('POST /api/procedure', () => {
     test('should execute stored procedure with no parameters', async () => {
+      // Mock successful stored procedure execution - mysql2 returns [rows, fields]
+      mockPool.execute.mockResolvedValue([[{ userid: 1, firstname: 'Test', lastname: 'User' }], []]);
+      
       const response = await request(app)
         .post('/api/procedure')
         .send({
@@ -231,9 +129,13 @@ describe('API Tests', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.data).toBeDefined();
       expect(response.body.procedure).toBe('GetAllUsers');
+      expect(mockPool.execute).toHaveBeenCalledWith('CALL GetAllUsers()', []);
     });
     
     test('should execute stored procedure with parameters', async () => {
+      // Mock successful stored procedure with parameters - mysql2 returns [rows, fields]
+      mockPool.execute.mockResolvedValue([[{ userid: 1, firstname: 'Test', lastname: 'User' }], []]);
+      
       const response = await request(app)
         .post('/api/procedure')
         .send({
@@ -245,6 +147,7 @@ describe('API Tests', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.data).toBeDefined();
       expect(response.body.procedure).toBe('GetUserById');
+      expect(mockPool.execute).toHaveBeenCalledWith('CALL GetUserById(?)', [1]);
     });
     
     test('should return error for missing procedure name', async () => {
@@ -258,6 +161,9 @@ describe('API Tests', () => {
     });
     
     test('should handle non-existent procedure gracefully', async () => {
+      // Mock database error for non-existent procedure
+      mockPool.execute.mockRejectedValue(new Error('Procedure does not exist'));
+      
       const response = await request(app)
         .post('/api/procedure')
         .send({
@@ -267,7 +173,7 @@ describe('API Tests', () => {
         .expect(500);
       
       expect(response.body.success).toBe(false);
-      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Procedure does not exist');
     });
   });
   

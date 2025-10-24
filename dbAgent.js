@@ -36,6 +36,7 @@ async function initDatabase() {
     };
     
     dbPool = mysql.createPool(dbConfig);
+    module.exports.dbPool = dbPool;
     
     console.log('Database connection pool created');
     console.log(`Connected to: ${dbConfig.host}:${dbConfig.port}/${dbConfig.database} as ${dbConfig.user}`);
@@ -50,7 +51,10 @@ async function initDatabase() {
  */
 async function executeQuery(sql, params = []) {
   try {
-    const [rows] = await dbPool.execute(sql, params);
+    if (!module.exports.dbPool) {
+      throw new Error('Database not initialized');
+    }
+    const [rows] = await module.exports.dbPool.execute(sql, params);
     return { success: true, data: rows };
   } catch (error) {
     console.log('Query error:', error.message);
@@ -63,11 +67,14 @@ async function executeQuery(sql, params = []) {
  */
 async function executeStoredProcedure(procedureName, params = []) {
   try {
+    if (!module.exports.dbPool) {
+      throw new Error('Database not initialized');
+    }
     // Build the CALL statement
     const placeholders = params.map(() => '?').join(', ');
     const sql = `CALL ${procedureName}(${placeholders})`;
     
-    const [rows] = await dbPool.execute(sql, params);
+    const [rows] = await module.exports.dbPool.execute(sql, params);
     return { success: true, data: rows };
   } catch (error) {
     console.log('Stored procedure error:', error.message);
@@ -215,5 +222,17 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-// Start the server
-startServer();
+// Export functions for testing
+module.exports = {
+  app,
+  dbPool,
+  initDatabase,
+  executeQuery,
+  executeStoredProcedure,
+  startServer
+};
+
+// Only start the server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
