@@ -1,6 +1,12 @@
 # Database Agent
 
-A lightweight REST API for MySQL database access with stored procedure support.
+A lightweight REST API for MySQL database access with stored procedure support.  
+
+Make arbitrary SQL calls against databases from within Postman test scripts.  Manage test data, validate API results directly against the database and more.  
+
+
+
+
 
 ## Overview
 
