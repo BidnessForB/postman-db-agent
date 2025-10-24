@@ -34,18 +34,21 @@ if ! $MYSQL_CMD -e "SELECT 1;" > /dev/null 2>&1; then
     exit 1
 fi
 
+# Change to the procedures directory
+cd "$(dirname "$0")"
+
 # Install stored procedures
 echo "Installing sp_user.sql..."
-$MYSQL_CMD users < db/sp_user.sql
+$MYSQL_CMD users < sp_user.sql
 
 echo "Installing sp_user_update.sql..."
-$MYSQL_CMD users < db/sp_user_update.sql
+$MYSQL_CMD users < sp_user_update.sql
 
 echo "Installing sp_user_delete.sql..."
-$MYSQL_CMD users < db/sp_user_delete.sql
+$MYSQL_CMD users < sp_user_delete.sql
 
 echo "Installing sp_user_get.sql..."
-$MYSQL_CMD users < db/sp_user_get.sql
+$MYSQL_CMD users < sp_user_get.sql
 
 echo "Verifying installation..."
 $MYSQL_CMD users -e "SHOW PROCEDURE STATUS WHERE Db = 'users';"
