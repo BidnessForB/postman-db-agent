@@ -93,10 +93,7 @@ node-data/
 │   ├── database_schema.sql # Complete database schema
 │   ├── setup_database.sh   # Complete setup script
 │   ├── procedures/         # Stored procedures directory
-│   │   ├── sp_user.sql     # User creation procedures
-│   │   ├── sp_user_update.sql # User update procedures
-│   │   ├── sp_user_delete.sql # User delete procedures
-│   │   ├── sp_user_get.sql # User query procedures
+│   │   ├── all_stored_procedures.sql # All procedures in one file
 │   │   └── install_procedures.sh # Installation script
 │   └── README.md           # Database documentation
 └── README.md               # This file

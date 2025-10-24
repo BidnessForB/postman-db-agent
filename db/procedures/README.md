@@ -8,12 +8,15 @@ This directory contains MySQL stored procedures for user and address management.
 - **`database_schema.sql`** - Complete database schema with sample data
 - **`setup_database.sh`** - Complete database setup from scratch
 
-### Stored Procedures (in `procedures/` directory)
-- **`procedures/sp_user.sql`** - Create user procedures (AddUser, AddUserWithAddress)
-- **`procedures/sp_user_update.sql`** - Update user procedures (UpdateUser, UpdateUserAddress)
-- **`procedures/sp_user_delete.sql`** - Delete user procedures (DeleteUser, DeleteUserAddress)
-- **`procedures/sp_user_get.sql`** - Get user procedures (GetUserById, GetAllUsers, SearchUsers)
-- **`procedures/install_procedures.sh`** - Installation script for all procedures
+### Stored Procedures
+- **`all_stored_procedures.sql`** - **NEW**: All stored procedures in a single file
+- **`install_procedures.sh`** - Installation script for all procedures
+
+### Legacy Files (Deprecated)
+- **`sp_user.sql`** - Create user procedures (AddUser, AddUserWithAddress) - **DEPRECATED**
+- **`sp_user_update.sql`** - Update user procedures (UpdateUser, UpdateUserAddress) - **DEPRECATED**
+- **`sp_user_delete.sql`** - Delete user procedures (DeleteUser, DeleteUserAddress) - **DEPRECATED**
+- **`sp_user_get.sql`** - Get user procedures (GetUserById, GetAllUsers, SearchUsers) - **DEPRECATED**
 
 ## Installation
 
@@ -41,16 +44,16 @@ chmod +x db/procedures/install_procedures.sh
 ./db/procedures/install_procedures.sh myuser mypassword
 ```
 
-### Option 3: Manual installation
+### Option 3: Manual installation (NEW - Single File)
 ```bash
-# Execute each file individually
-mysql -u root users < db/procedures/sp_user.sql
-mysql -u root users < db/procedures/sp_user_update.sql
-mysql -u root users < db/procedures/sp_user_delete.sql
-mysql -u root users < db/procedures/sp_user_get.sql
+# Execute the consolidated file
+mysql -u root users < db/procedures/all_stored_procedures.sql
+
+# Or with custom credentials
+mysql -u myuser -p users < db/procedures/all_stored_procedures.sql
 ```
 
-### Option 4: Interactive MySQL session
+### Option 4: Interactive MySQL session (NEW - Single File)
 ```bash
 # Connect to MySQL
 mysql -u root
@@ -58,11 +61,17 @@ mysql -u root
 # Select your database
 USE users;
 
-# Execute each file
-SOURCE db/procedures/sp_user.sql;
-SOURCE db/procedures/sp_user_update.sql;
-SOURCE db/procedures/sp_user_delete.sql;
-SOURCE db/procedures/sp_user_get.sql;
+# Execute the consolidated file
+SOURCE db/procedures/all_stored_procedures.sql;
+```
+
+### Option 5: Legacy installation (DEPRECATED)
+```bash
+# Execute each individual file (deprecated - use all_stored_procedures.sql instead)
+mysql -u root users < db/procedures/sp_user.sql
+mysql -u root users < db/procedures/sp_user_update.sql
+mysql -u root users < db/procedures/sp_user_delete.sql
+mysql -u root users < db/procedures/sp_user_get.sql
 ```
 
 ## Usage Examples
