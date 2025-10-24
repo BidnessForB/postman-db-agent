@@ -13,7 +13,6 @@ alwaysApply: true
 
 ## File Naming
 - JavaScript: camelCase (imageUtils.js)
-- Templates: kebab-case (data-tree.hbs)
 - Descriptive names indicating functionality
 
 ## Code Quality

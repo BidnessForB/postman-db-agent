@@ -1,13 +1,7 @@
 .DS_Store
-test-images
 *.log
 logs/
 node_modules
 .vscode
 *.code-workspace
-app/public/output
-output
-foo
-full.html
-app/uploads
 .env

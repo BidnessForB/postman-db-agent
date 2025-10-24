@@ -6,8 +6,7 @@ alwaysApply: true
 
 ## Core Requirements
 - Always wrap API calls in try-catch blocks
-- Use `logError()` for error logging with structured metadata
-- Include fallback behavior where appropriate
+- use console.log for logging
 - Handle network timeouts and connection issues
 - Default to single lines for info/warn logging
 
@@ -16,7 +15,6 @@ alwaysApply: true
 - Meaningful user-facing error messages
 - Retry logic for transient failures
 - Proper cleanup in finally blocks
-- Include request context (imageId, etc.)
 
 ```javascript
 // Good: Comprehensive error handling
@@ -27,8 +25,7 @@ const handleFileUpload = (req, res, next) => {
     if (!validateImage(buffer)) throw new Error(`Invalid image: ${req.file.originalname}`);
     next();
   } catch (error) {
-    cleanImageDir(req.imageId);
-    logError('Upload failed: ' + error.message, error);
+    console.log("Error: ", req, err);
     return res.status(400).json({ status: 'error', message: error.message });
   }
 };

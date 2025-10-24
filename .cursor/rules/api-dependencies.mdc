@@ -4,38 +4,8 @@ alwaysApply: false
 
 # API & Dependencies Rules
 
-## OpenAI API
-- Use OpenAI Vision API for image analysis
-- Include proper error handling and timeout handling
-- Store API keys in environment variables
-- Implement retry logic for transient failures
 
 ## Dependencies
 - Keep minimal and well-documented
-- Use official OpenAI Node.js SDK
-- Include dotenv, Winston, Handlebars, Express
 - Add dependencies only when necessary
 
-## Current Stack
-- `axios` - HTTP client
-- `dotenv` - Environment variables
-- `exif-parser` - EXIF data extraction
-- `express` - Web framework
-- `express-handlebars` - Templates
-- `multer` - File uploads
-- `openai` - AI API client
-- `winston` - Logging
-
-```javascript
-// Good: API with error handling
-const getAIInsights = async (imageId) => {
-  try {
-    const response = await axios.request(apiConfig);
-    logInfo('AI analysis completed', imageId);
-    return response.data;
-  } catch (error) {
-    logError('AI analysis failed', error);
-    throw new Error('AI Processing Failed');
-  }
-};
-```
