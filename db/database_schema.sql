@@ -3,9 +3,9 @@
 -- Description: Complete database setup with optional sample data
 -- =============================================
 
--- Create the users database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS users;
-USE users;
+-- Create the database if it doesn't exist
+CREATE DATABASE IF NOT EXISTS {{DATABASE_NAME}};
+USE {{DATABASE_NAME}};
 
 -- =============================================
 -- User Table

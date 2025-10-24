@@ -8,7 +8,7 @@ This project provides a REST API that acts as a database agent, allowing you to:
 - Execute SQL queries via HTTP endpoints
 - Call MySQL stored procedures
 - Access your database from Postman or any HTTP client
-- Manage users and addresses with pre-built stored procedures
+- Use your own database or the included sample database
 
 ## Quick Start
 
@@ -30,42 +30,28 @@ cp .env.example .env
 # DB_PORT=3306
 ```
 
-### 3. Setup Database (Choose one option)
+### 3. Setup Database (Optional)
 
-#### Option A: Complete setup from scratch (Recommended)
-```bash
-# Make setup script executable
-chmod +x db/setup_database.sh
+**Option A: Use your own database**
+- Configure your existing database in the `.env` file
+- Skip to step 4 to start the agent
 
-# Run with default credentials (root, no password)
-./db/setup_database.sh
+**Option B: Use the included sample database (Recommended for testing)**
 
-# Run with custom credentials
-./db/setup_database.sh myuser mypassword
-```
+See [the Sample DB README.md](db/README.md) for details on the sample database setup.
 
-#### Option B: Install stored procedures only (if database already exists)
-```bash
-# Make installation script executable
-chmod +x db/procedures/install_procedures.sh
-
-# Run with default credentials (root, no password)
-./db/procedures/install_procedures.sh
-
-# Run with custom credentials
-./db/procedures/install_procedures.sh myuser mypassword
-```
 
 ### 4. Start the Database Agent
 ```bash
 node dbAgent.js
 ```
 
-### 5. Test the API
-
-#### Postman Collection
-1. Import `Postman_Database_Agent_Collection.json` into Postman
+### 5. Test the API in Postman
+1. Import `postman/Postman_Database_Agent_Collection.json` into Postman
 2. Start with the **Status Check** request
+3. Try the sample queries or use your own database queries
+
+NOTE: The collection includes complete documentation for each request.
 
 The agent will start on `http://localhost:3000`
 
@@ -77,6 +63,8 @@ The agent will start on `http://localhost:3000`
 ### Database Queries
 - **POST** `/api/query` - Execute custom SQL queries
 - **POST** `/api/procedure` - Execute stored procedures
+
+The colleciton contains additional documentation and examples.  
 
 
 ## Usage Examples
@@ -102,8 +90,8 @@ node-data/
 ├── dbAgent.js              # Main database agent server
 ├── package.json            # Dependencies
 ├── Postman_Database_Agent_Collection.json # Postman collection
-├── .vscode/
-│   └── dbAgent-postman-package.js # Postman package module
+├── postman/
+│   └── postman-dbagent-package.js # Postman package module
 ├── db/                     # Database files
 │   ├── database_schema.sql # Complete database schema
 │   ├── setup_database.sh   # Complete setup script
@@ -114,71 +102,38 @@ node-data/
 └── README.md               # This file
 ```
 
-## Stored Procedures
+## Postman Package Module
 
-The following stored procedures are available:
+The `postman/postman-dbagent-package.js` file is designed to be imported or copy-pasted into a Postman package for easy database operations within Postman scripts.
 
-### User Creation
-- `AddUser(firstname, lastname, email)` - Add user only
-- `AddUserWithAddress(...)` - Add user with address
+### Purpose
+This package provides utility functions that wrap the database agent API, making it easy to execute SQL queries and stored procedures directly from Postman test scripts without writing raw HTTP requests.
 
-### User Updates
-- `UpdateUser(userid, firstname, lastname, email)` - Update user only
-- `UpdateUserAddress(...)` - Update user with address
-
-### User Deletion
-- `DeleteUser(userid)` - Delete user and address
-- `DeleteUserAddress(userid)` - Delete address only
-
-### User Queries
-- `GetUserById(userid)` - Get user by ID with address
-- `GetAllUsers()` - Get all users with addresses
-- `SearchUsers(search_term)` - Search users by name/email
-
-## Configuration
-
-The database agent uses environment variables for configuration. Create a `.env` file from the example:
-
-```bash
-cp env.example .env
-```
-
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DB_HOST` | localhost | Database host |
-| `DB_USER` | root | Database username |
-| `DB_PASSWORD` | (empty) | Database password |
-| `DB_NAME` | users | Database name |
-| `DB_PORT` | 3306 | Database port |
-| `DB_CONNECTION_LIMIT` | 10 | Connection pool limit |
-| `PORT` | 3000 | API server port |
-
-To modify these settings, edit your `.env` file.
-
-## Postman Integration
-
-This agent is designed to work seamlessly with Postman. You can:
-1. Import the API endpoints into Postman
-2. Use the stored procedures for database operations
-3. Test your database operations without direct MySQL access
-4. Build automated tests for your database functionality
-
-### Postman Package Module
-
-The project includes `dbAgent-postman-package.js` - a set of utility functions that wrap the database agent API, making it easy to use in Postman scripts:
-
+### Available Functions
 - **`sendSQL(querySql)`** - Execute custom SQL queries
 - **`execProcedure(procName, params)`** - Execute stored procedures
 
-These functions handle HTTP requests to the database agent endpoints and provide a clean interface for database operations within Postman scripts. The package is ready to be imported into the Postman package manager for easy reuse across collections.
+### Usage Examples
+```javascript
+// Execute a SQL query
+const query = {
+    "query": "SELECT * FROM user LIMIT 5",
+    "params": []
+};
+const results = await sendSQL(query);
 
-## Benefits
+// Execute a stored procedure
+const procResults = await execProcedure("GetAllUsers", []);
+```
 
-- ✅ **REST API Access** - Use HTTP instead of direct database connections
-- ✅ **Postman Compatible** - Works in Postman sandbox environment
-- ✅ **Stored Procedures** - Pre-built, optimized database operations
-- ✅ **Error Handling** - Comprehensive error responses
-- ✅ **Transaction Safety** - All operations are atomic
-- ✅ **Lightweight** - Minimal dependencies and overhead
+### Integration
+The usage of this package is demonstrated in the `Postman_Database_Agent_Collection.json` collection, which includes:
+- **Raw script examples** - Shows how to copy-paste the functions directly
+- **Package import examples** - Shows how to use it as a Postman package
+- **Complete test scenarios** - Demonstrates both SQL queries and stored procedure calls
+
+### Benefits
+- **Simplified API calls** - No need to write raw HTTP requests
+- **Error handling** - Built-in error handling and response parsing
+- **Reusable** - Can be used across multiple Postman collections
+

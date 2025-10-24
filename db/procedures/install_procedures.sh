@@ -2,12 +2,13 @@
 
 # Install User Stored Procedures
 # This script installs all stored procedures for user management
-# Usage: ./install_procedures.sh [username] [password]
-# Default: username=root, password=(none)
+# Usage: ./install_procedures.sh [username] [password] [database_name]
+# Default: username=root, password=(none), database_name=users
 
 # Parse command line arguments
 USERNAME=${1:-root}
 PASSWORD=${2:-""}
+DATABASE_NAME=${3:-users}
 
 # Build MySQL connection string
 if [ -z "$PASSWORD" ]; then
@@ -19,6 +20,7 @@ fi
 echo "Installing user stored procedures..."
 echo "Using MySQL user: $USERNAME"
 echo "Password: ${PASSWORD:-'(none)'}"
+echo "Database name: $DATABASE_NAME"
 
 # Check if MySQL is running
 if ! pgrep -x "mysqld" > /dev/null; then
@@ -39,9 +41,9 @@ cd "$(dirname "$0")"
 
 # Install stored procedures
 echo "Installing all_stored_procedures.sql..."
-$MYSQL_CMD users < all_stored_procedures.sql
+$MYSQL_CMD $DATABASE_NAME < all_stored_procedures.sql
 
 echo "Verifying installation..."
-$MYSQL_CMD users -e "SHOW PROCEDURE STATUS WHERE Db = 'users';"
+$MYSQL_CMD $DATABASE_NAME -e "SHOW PROCEDURE STATUS WHERE Db = '$DATABASE_NAME';"
 
 echo "Installation complete!"
